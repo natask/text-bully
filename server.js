@@ -17,12 +17,19 @@ app.get('/', (req, res) => {
   res.send('Mock Speak Animator API Server');
 });
 
+import fs from 'fs';
+import path from 'path';
+
+// Ensure output directory exists
+const outputDir = path.join(process.cwd(), 'output');
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
 app.post('/api/mock', async (req, res) => {
   try {
     const { input } = req.body;
-    const prompt = `Write a sarcastic response to: "${input}"
-
-Be clever and relevant to the specific input, use slang, keep it short and funny, don't do too much.`;
+    const prompt = `Given this message, respond with a single sarcastic and mocking tone: ${input}\n\nProvide only ONE witty response that makes fun of the message. Keep it concise and sharp. Use Slang`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4',
@@ -35,7 +42,15 @@ Be clever and relevant to the specific input, use slang, keep it short and funny
       top_p: 0.95
     });
 
-    res.json({ response: response.choices[0].message.content.trim() });
+    const mockResponse = response.choices[0].message.content.trim();
+    
+    // Save response to a file with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = path.join(outputDir, `response-${timestamp}.txt`);
+    fs.writeFileSync(filename, mockResponse);
+
+    // Send response as JSON
+    res.json({ response: mockResponse });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to generate response' });
