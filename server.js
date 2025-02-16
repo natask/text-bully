@@ -29,7 +29,7 @@ if (!fs.existsSync(outputDir)) {
 app.post('/api/mock', async (req, res) => {
   try {
     const { input } = req.body;
-    const prompt = `Given this message, respond with a single sarcastic and mocking tone: ${input}\n\nProvide only ONE witty response that makes fun of the message. Keep it concise and sharp. Use Slang`;
+    const prompt = `Given this message, respond with a single sarcastic and mocking tone: ${input}\n\nProvide only ONE witty response that makes fun of the message. Keep it concise and sharp. Use Slang and be nonchalant.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4',

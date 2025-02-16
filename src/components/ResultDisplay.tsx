@@ -47,6 +47,24 @@ const ResultDisplay = ({ text, audioUrl, videoUrl, onPlay, onDownload }: ResultD
           </Button>
         </div>
       )}
+      
+      <div className="mt-4 rounded-lg overflow-hidden border-2 border-white/50 shadow-lg">
+        {videoUrl ? (
+          <video
+            className="w-full aspect-video"
+            controls
+            src={videoUrl}
+            controlsList="nodownload"
+          />
+        ) : (
+          <div className="w-full aspect-video bg-gradient-to-br from-purple-100/50 to-white/50 flex items-center justify-center">
+            <div className="text-center text-gray-400">
+              <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Video will appear here</p>
+            </div>
+          </div>
+        )}
+      </div>
     </Card>
   );
 };
