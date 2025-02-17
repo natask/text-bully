@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://stormy-eyrie-50634-676b2fbbda97.herokuapp.com/';
 
 export async function generateMockingResponse(input: string): Promise<string> {
   try {
