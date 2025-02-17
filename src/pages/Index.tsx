@@ -5,12 +5,14 @@ import ResultDisplay from '@/components/ResultDisplay';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Zap, MessageSquare } from "lucide-react";
-import { generateMockingResponse } from '@/services/ai';
+import { generateMockingResponse, generateAudio } from '@/services/ai';
+import { mergeVideoWithAudio } from '@/services/mergeVideoAudio';
 const Index = () => {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'processing' | 'complete' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
   const {
     toast
   } = useToast();
@@ -35,9 +37,13 @@ const Index = () => {
       await simulateProgress(30, 60);
 
       // Step 3: Text to speech (placeholder)
+      const audioUrl = await generateAudio(mockingResponse);
       await simulateProgress(60, 90);
 
       // Step 4: Video generation (placeholder)
+      const videoUrl = await mergeVideoWithAudio(audioUrl);
+      setVideoUrl(videoUrl);
+
       await simulateProgress(90, 100);
       setResult(mockingResponse);
       setStatus('complete');
@@ -113,7 +119,7 @@ const Index = () => {
 
             {status !== 'idle' && <ProcessingStatus status={status} progress={progress} />}
 
-            {status === 'complete' && <ResultDisplay text={result} onPlay={handlePlay} onDownload={handleDownload} />}
+            {status === 'complete' && <ResultDisplay text={result} onPlay={handlePlay} onDownload={handleDownload} videoUrl={videoUrl} />}
           </div>
         </div>
       </div>
