@@ -27,7 +27,13 @@ const PATHS = {
 };
 
 const app = express();
+// Configure CORS with specific options
+
 app.use(cors());
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 app.use(express.json());
 
 const openai = new OpenAI({
@@ -50,7 +56,6 @@ app.get('/', (req, res) => {
   res.send('Mock Speak Animator API Server');
 });
 
-
 async function generateMockingResponse(req, res) {
   try {
     const { input } = req.body;
@@ -70,7 +75,7 @@ async function generateMockingResponse(req, res) {
     const mockResponse = response.choices[0].message.content.trim();
     
     // Save response with standardized filename
-    const filename = path.join(PATHS.output, `.txt`);
+    const filename = path.join(PATHS.output, `${createFileName()}.txt`);
     fs.writeFileSync(filename, mockResponse);
 
     res.json({ response: mockResponse });
@@ -112,13 +117,19 @@ app.post('/api/audio', async (req, res) => {
   }
 });
 
+// Serve static files from the output directory
+app.use('/videos', express.static(path.join(process.cwd(), PATHS.output)));
+
 app.post('/api/video', async (req, res) => {
   try {
     const { audioFilePath } = req.body;
     // Generate video with standardized filename
     const videoOutputPath = path.join(PATHS.output, `${createFileName()}.mp4`);
     await mergeVideoWithAudio(audioFilePath, path.join(PATHS.root, 'utils', 'final.mp4'), videoOutputPath);
-    res.json({ response: videoOutputPath });
+    
+    // Return the URL to access the video
+    const videoUrl = `/videos/${path.basename(videoOutputPath)}`;
+    res.json({ videoUrl });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to generate response' });

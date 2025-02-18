@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ const ResultDisplay = ({ text, audioUrl, videoUrl, onPlay, onDownload }: ResultD
         </div>
         <p className="text-gray-800 font-medium leading-relaxed">{text}</p>
       </div>
-      
+
       {(audioUrl || videoUrl) && (
         <div className="flex gap-3">
           <Button
@@ -54,7 +53,7 @@ const ResultDisplay = ({ text, audioUrl, videoUrl, onPlay, onDownload }: ResultD
             className="w-full aspect-video"
             controls
             src={videoUrl}
-            controlsList="nodownload"
+            
           />
         ) : (
           <div className="w-full aspect-video bg-gradient-to-br from-purple-100/50 to-white/50 flex items-center justify-center">

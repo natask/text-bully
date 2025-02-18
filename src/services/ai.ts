@@ -1,9 +1,6 @@
 import axios from 'axios';
-import Replicate from "replicate";
-import { writeFile, readFile } from "node:fs/promises";
-import { streamToWavFile } from '@/utils/streamToFile';
 
-const API_BASE_URL = 'https://text-bully-git-main-natasks-projects.vercel.app:3000/';
+const API_BASE_URL = 'http://172.236.100.240:3000';
 
 export async function generateMockingResponse(input: string): Promise<string> {
   try {
@@ -19,7 +16,6 @@ export async function generateMockingResponse(input: string): Promise<string> {
 export async function generateAudio(message: string): Promise<string> {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/audio`, { message });
-    // Convert the audio URL to a blob URL that can be played in the browser
     console.log(response.data);
     return response.data.response;
   } catch (error) {
@@ -30,12 +26,15 @@ export async function generateAudio(message: string): Promise<string> {
 
 export async function generateVideo(audioFilePath: string): Promise<string> {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/video`, { audioFilePath });
-    // Convert the audio URL to a blob URL that can be played in the browser
-    console.log(response.data);
-    return response.data.response;
+    const response = await axios.post(`${API_BASE_URL}/api/video`, { 
+      audioFilePath,
+      message: "are_you_really_correct"
+    });
+    
+    // Return the full URL to the video
+    return `${API_BASE_URL}${response.data.videoUrl}`;
   } catch (error) {
-    console.error('Error generating mocking video:', error);
-    throw new Error('Failed to generate mocking video');
+    console.error('Error generating video:', error);
+    throw new Error('Failed to generate video');
   }
 }

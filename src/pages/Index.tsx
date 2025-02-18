@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/TextInput';
 import ProcessingStatus from '@/components/ProcessingStatus';
 import ResultDisplay from '@/components/ResultDisplay';
@@ -9,13 +9,13 @@ import { generateMockingResponse, generateAudio, generateVideo } from '@/service
 
 const Index = () => {
   const [message, setMessage] = useState('');
-  const [status, setStatus] = useState<'idle' | 'processing' | 'complete' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'processing message' | 'processing voice' | 'processing video' | 'complete' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
+
   const handleProcess = async () => {
     if (!message.trim()) {
       toast({
@@ -25,6 +25,7 @@ const Index = () => {
       });
       return;
     }
+
     setStatus('processing message');
     setProgress(0);
 
@@ -33,32 +34,37 @@ const Index = () => {
       await simulateProgress(0, 30);
       
       // Step 2: Generate mocking response
-      const mockingResponse = await generateMockingResponse(message);
-      setStatus('processing voice');
-      await simulateProgress(30, 60);
+      // const mockingResponse = await generateMockingResponse(message);
+      // setStatus('processing voice');
+      // await simulateProgress(30, 60);
+      const mockingResponse = "Oh wow, a test? You must've stayed up all night coming up with that one. Groundbreaking.";
       setResult(mockingResponse);
 
-      // Step 3: Text to speech (placeholder)
-      const audioPath = await generateAudio(mockingResponse);
-      console.log({audioPath});
-      await simulateProgress(60, 90);
-      setStatus('processing video');
+      // // Step 3: Text to speech
+      // const audioPath = await generateAudio(mockingResponse);
+      // console.log({audioPath});
+      // await simulateProgress(60, 90);
+      // setStatus('processing video');
 
-      // Step 4: Video generation (placeholder)
-      const videoUrl = await generateVideo(audioPath);
-      setVideoUrl(videoUrl);
+      const audioPath="/root/text-bully/server/output/2025-02-18T03-56-44-026Z_are_you_really_correct.wav";
+      
+      // Step 4: Video generation
+      const newVideoUrl = await generateVideo(audioPath);
+      console.log(newVideoUrl)
+      setVideoUrl(newVideoUrl);
       await simulateProgress(90, 100);
       
       setStatus('complete');
       toast({
         title: "Success",
-        description: "Processing completed successfully"
+        description: "Time to mock your friends!"
       });
     } catch (error) {
+      console.error('Processing error:', error);
       setStatus('error');
       toast({
         title: "Error",
-        description: "An error occurred during processing",
+        description: "Failed to process your request",
         variant: "destructive"
       });
     }
@@ -114,7 +120,7 @@ const Index = () => {
             <TextInput value={message} onChange={setMessage} />
             
             <div className="flex justify-center">
-              <Button onClick={handleProcess} disabled={status === 'processing'} className="min-w-[200px] bg-gradient-to-r from-red-500 via-purple-500 to-orange-500 hover:from-red-600 hover:via-purple-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg group">
+              <Button onClick={handleProcess} disabled={status.includes('processing')} className="min-w-[200px] bg-gradient-to-r from-red-500 via-purple-500 to-orange-500 hover:from-red-600 hover:via-purple-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg group">
                 <Zap className="mr-2 h-4 w-4 group-hover:animate-bounce" />
                 Bully This Text
               </Button>
