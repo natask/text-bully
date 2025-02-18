@@ -3,7 +3,7 @@ import Replicate from "replicate";
 import { writeFile, readFile } from "node:fs/promises";
 import { streamToWavFile } from '@/utils/streamToFile';
 
-const API_BASE_URL = 'https://stormy-eyrie-50634-676b2fbbda97.herokuapp.com/';
+const API_BASE_URL = 'https://text-bully-git-main-natasks-projects.vercel.app:3000/';
 
 export async function generateMockingResponse(input: string): Promise<string> {
   try {
