@@ -5,8 +5,8 @@ import ResultDisplay from '@/components/ResultDisplay';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Zap, MessageSquare } from "lucide-react";
-import { generateMockingResponse, generateAudio } from '@/services/ai';
-import { mergeVideoWithAudio } from '@/services/mergeVideoAudio';
+import { generateMockingResponse, generateAudio, generateVideo } from '@/services/ai';
+
 const Index = () => {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'processing' | 'complete' | 'error'>('idle');
@@ -25,7 +25,7 @@ const Index = () => {
       });
       return;
     }
-    setStatus('processing');
+    setStatus('processing message');
     setProgress(0);
 
     try {
@@ -34,18 +34,21 @@ const Index = () => {
       
       // Step 2: Generate mocking response
       const mockingResponse = await generateMockingResponse(message);
+      setStatus('processing voice');
       await simulateProgress(30, 60);
+      setResult(mockingResponse);
 
       // Step 3: Text to speech (placeholder)
-      const audioUrl = await generateAudio(mockingResponse);
+      const audioPath = await generateAudio(mockingResponse);
+      console.log({audioPath});
       await simulateProgress(60, 90);
+      setStatus('processing video');
 
       // Step 4: Video generation (placeholder)
-      const videoUrl = await mergeVideoWithAudio(audioUrl);
+      const videoUrl = await generateVideo(audioPath);
       setVideoUrl(videoUrl);
-
       await simulateProgress(90, 100);
-      setResult(mockingResponse);
+      
       setStatus('complete');
       toast({
         title: "Success",
